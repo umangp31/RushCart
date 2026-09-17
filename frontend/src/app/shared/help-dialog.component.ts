@@ -5,7 +5,7 @@ import { PageGuide } from './guide';
 @Component({
   selector: 'app-help',
   template: `
-    <button class="ghost sm help-btn" type="button" (click)="open()">
+    <button class="ghost help-btn" type="button" (click)="open()">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
         <circle cx="8" cy="8" r="6.5"/><path d="M6.2 6.3a1.9 1.9 0 1 1 2.7 1.7c-.6.3-.9.7-.9 1.3M8 11.6v.2"/>
       </svg>
