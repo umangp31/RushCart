@@ -30,7 +30,7 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('RushCart');
-    expect(compiled.querySelectorAll('nav.tabs a').length).toBe(5);
+    expect(compiled.querySelectorAll('nav.tabs a').length).toBe(6);
   });
 
   it('polls /actuator/health on init', () => {

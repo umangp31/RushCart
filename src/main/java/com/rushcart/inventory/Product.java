@@ -28,15 +28,24 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+    /** Optional catalog image; null → dashboard placeholder. */
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
     protected Product() {}
 
     public Product(String sku, String name, BigDecimal price) {
+        this(sku, name, price, null);
+    }
+
+    public Product(String sku, String name, BigDecimal price, String imageUrl) {
         this.sku = sku;
         this.name = name;
         this.price = price;
+        this.imageUrl = imageUrl;
         this.createdAt = Instant.now();
     }
 
@@ -54,6 +63,10 @@ public class Product {
 
     public BigDecimal getPrice() {
         return price;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public Instant getCreatedAt() {

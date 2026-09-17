@@ -2,26 +2,23 @@ import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PAGE_GUIDES } from '../../shared/guide';
 import { AboutComponent } from './about.component';
-import { SimulateComponent } from './simulate.component';
 
-type Tab = 'about' | 'run' | 'simulate';
+type Tab = 'about' | 'run';
 
 /** Static how-to for running and exercising RushCart from this dashboard, Swagger, and curl. */
 @Component({
   selector: 'app-guide',
-  imports: [RouterLink, AboutComponent, SimulateComponent],
+  imports: [RouterLink, AboutComponent],
   template: `
     <header class="page-head">
       <div><h2>Guide</h2></div>
       <div class="subtabs" role="tablist">
         <button type="button" role="tab" [attr.aria-selected]="tab() === 'about'" [class.active]="tab() === 'about'" (click)="tab.set('about')">About</button>
         <button type="button" role="tab" [attr.aria-selected]="tab() === 'run'" [class.active]="tab() === 'run'" (click)="tab.set('run')">Run &amp; test</button>
-        <button type="button" role="tab" [attr.aria-selected]="tab() === 'simulate'" [class.active]="tab() === 'simulate'" (click)="tab.set('simulate')">Simulate</button>
       </div>
     </header>
 
     @if (tab() === 'about') { <app-about /> }
-    @if (tab() === 'simulate') { <app-simulate /> }
 
     <div class="guide" [hidden]="tab() !== 'run'">
       <section>
@@ -106,7 +103,7 @@ docker compose start redis</code></pre>
             </a>
           }
         </div>
-        <p class="hint">Each page also has a <b>How to use</b> button in its header with step-by-step notes.</p>
+        <p class="hint">Each page also has a <b>How to use</b> button in its header with step-by-step notes. To reproduce the oversell test from the browser, open <a routerLink="/simulate">Simulate</a>.</p>
       </section>
     </div>
   `,

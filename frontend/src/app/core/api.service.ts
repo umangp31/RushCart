@@ -21,6 +21,10 @@ export class ApiService {
     return this.http.get<InventoryRow[]>(`${this.base}/api/v1/products`);
   }
 
+  createProduct(body: { sku: string; name: string; price: number; initialQty: number; imageUrl?: string | null }): Observable<unknown> {
+    return this.http.post(`${this.base}/api/v1/products`, body);
+  }
+
   replenish(sku: string, qty: number): Observable<unknown> {
     return this.http.post(`${this.base}/api/v1/products/${encodeURIComponent(sku)}/replenish`, { qty });
   }

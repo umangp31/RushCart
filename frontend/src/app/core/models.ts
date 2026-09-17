@@ -5,6 +5,7 @@ export interface InventoryRow {
   sku: string;
   name: string;
   price: number;
+  imageUrl: string | null;
   redisStock: number;
   pgAvailableQty: number;
   pgReservedQty: number;

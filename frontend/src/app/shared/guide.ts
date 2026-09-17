@@ -1,6 +1,6 @@
 /** Per-page "How to use" copy. Shown in the help dialog on each tab and collected on the Guide tab. */
 export interface PageGuide {
-  key: 'inventory' | 'orders' | 'status' | 'metrics';
+  key: 'inventory' | 'orders' | 'status' | 'metrics' | 'simulate';
   title: string;
   summary: string;
   steps: string[];
@@ -14,6 +14,8 @@ export const PAGE_GUIDES: PageGuide[] = [
     summary:
       'One row per SKU. Redis stock is what the hot path decrements; Postgres available/reserved is the source of truth. A stripe and ± delta mark rows where the two disagree.',
     steps: [
+      'Add item opens a form for a new SKU (name, price, starting stock, optional image URL). Items without an image get a placeholder card.',
+      'Switch between Cards and Table with the toggle in the header — same data, cards for browsing, the table for comparing numbers.',
       'Type a quantity in the Replenish box and press Enter (or Add) to top up a SKU — this writes to Postgres and Redis atomically under a Redisson lock.',
       'Redis stock shown in red means the SKU is sold out on the hot path; new reservations will be rejected with 409.',
       'Use Refresh after running load tests or curl commands to see the new balance.',
@@ -56,5 +58,18 @@ export const PAGE_GUIDES: PageGuide[] = [
       'Filter the raw table by a name fragment (e.g. `rushcart_`, `hikari`, `kafka`).',
     ],
     tryIt: 'Run the load test, then compare rushcart_reservation_outcome_total{result="success"} to the starting stock.',
+  },
+  {
+    key: 'simulate',
+    title: 'Simulate',
+    summary:
+      'Fires N real concurrent reservations from your browser against one SKU and tallies what the API answered — the oversell test, live.',
+    steps: [
+      'Pick a SKU with a small stock (replenish one on Inventory if everything is sold out) and a request count larger than that stock.',
+      'Run flash sale. The verdict compares successful 201s against the stock the run started with — it can never exceed it.',
+      'Each request uses its own X-Api-Key so the rate limiter stays out of the way. Tick Share one API key to watch the 20-token bucket turn the surplus into 429s instead.',
+      'Cross-check on Orders (new RESERVED rows) and Inventory (stock dropped by exactly the number of successes).',
+    ],
+    tryIt: 'Replenish FLASH-SCARCE-001 to 5, run 30 requests: expect 5 × 201 and 25 × 409.',
   },
 ];

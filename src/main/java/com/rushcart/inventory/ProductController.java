@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
@@ -42,11 +43,21 @@ public class ProductController {
     }
 
     public record CreateProductRequest(
-            @NotBlank String sku, @NotBlank String name, @NotNull BigDecimal price, @Min(0) int initialQty) {}
+            @NotBlank String sku,
+            @NotBlank String name,
+            @NotNull BigDecimal price,
+            @Min(0) int initialQty,
+            @Size(max = 1024) String imageUrl) {
+
+        public CreateProductRequest(String sku, String name, BigDecimal price, int initialQty) {
+            this(sku, name, price, initialQty, null);
+        }
+    }
 
     public record ReplenishRequest(@Min(1) int qty) {}
 
-    public record ProductResponse(UUID id, String sku, String name, BigDecimal price, long liveStock) {}
+    public record ProductResponse(
+            UUID id, String sku, String name, BigDecimal price, String imageUrl, long liveStock) {}
 
     /** Dashboard inventory row (§14.1): Redis hot-path count vs Postgres source of truth. */
     public record InventoryRow(
@@ -54,6 +65,7 @@ public class ProductController {
             String sku,
             String name,
             BigDecimal price,
+            String imageUrl,
             long redisStock,
             int pgAvailableQty,
             int pgReservedQty) {}
@@ -70,6 +82,7 @@ public class ProductController {
                             product.getSku(),
                             product.getName(),
                             product.getPrice(),
+                            product.getImageUrl(),
                             parseStock(stock),
                             inv != null ? inv.getAvailableQty() : 0,
                             inv != null ? inv.getReservedQty() : 0);
@@ -83,17 +96,29 @@ public class ProductController {
         Product product = productRepository.findBySku(sku).orElseThrow(() -> new ProductNotFoundException(sku));
         String stock = redisTemplate.opsForValue().get("stock:" + sku);
         return new ProductResponse(
-                product.getId(), product.getSku(), product.getName(), product.getPrice(), parseStock(stock));
+                product.getId(),
+                product.getSku(),
+                product.getName(),
+                product.getPrice(),
+                product.getImageUrl(),
+                parseStock(stock));
     }
 
     @PostMapping("/api/v1/products")
     @ResponseStatus(HttpStatus.CREATED)
     public ProductResponse create(@Valid @RequestBody CreateProductRequest request) {
-        Product product = productRepository.save(new Product(request.sku(), request.name(), request.price()));
+        String imageUrl = request.imageUrl() == null || request.imageUrl().isBlank() ? null : request.imageUrl().trim();
+        Product product =
+                productRepository.save(new Product(request.sku(), request.name(), request.price(), imageUrl));
         inventoryRepository.save(new Inventory(product.getId(), request.initialQty()));
         stockService.seed(request.sku(), request.initialQty());
         return new ProductResponse(
-                product.getId(), product.getSku(), product.getName(), product.getPrice(), request.initialQty());
+                product.getId(),
+                product.getSku(),
+                product.getName(),
+                product.getPrice(),
+                product.getImageUrl(),
+                request.initialQty());
     }
 
     @PostMapping("/api/v1/products/{sku}/replenish")

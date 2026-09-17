@@ -23,6 +23,10 @@ export const routes: Routes = [
       import('./features/metrics/metrics.component').then((m) => m.MetricsComponent),
   },
   {
+    path: 'simulate',
+    loadComponent: () => import('./features/simulate/simulate.component').then((m) => m.SimulateComponent),
+  },
+  {
     path: 'guide',
     loadComponent: () => import('./features/guide/guide.component').then((m) => m.GuideComponent),
   },

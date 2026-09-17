@@ -1,6 +1,9 @@
 spring:
   flyway:
     locations: classpath:db/migration,classpath:db/seed
+    # The demo seed is V900, so real migrations added later (V2, V3…) arrive below the
+    # already-applied version on a local DB. Only this profile loads the seed.
+    out-of-order: true
   datasource:
     url: jdbc:postgresql://localhost:${DB_PORT:5433}/${DB_NAME:rushcart}
     username: ${DB_USER:rushcart}

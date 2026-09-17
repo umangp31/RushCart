@@ -53,7 +53,7 @@ import { Component } from '@angular/core';
         </div>
         <p>
           Every number above is a Testcontainers test in <span class="mono">./mvnw verify</span> — real Postgres, Redis and Kafka,
-          nothing mocked. The <b>Simulate</b> tab lets you reproduce the first one from this page.
+          nothing mocked. The <b>Simulate</b> tab lets you reproduce the first one from your browser.
         </p>
       </section>
 

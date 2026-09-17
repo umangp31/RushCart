@@ -5,6 +5,8 @@ import { catchError, forkJoin, map, of } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { InventoryRow } from '../../core/models';
 import { ToastService } from '../../shared/toast.service';
+import { HelpDialogComponent } from '../../shared/help-dialog.component';
+import { PAGE_GUIDES } from '../../shared/guide';
 
 interface Tally { code: number; label: string; count: number; kind: 'good' | 'info' | 'warn' | 'bad'; }
 interface RunResult {
@@ -15,11 +17,16 @@ interface RunResult {
 /** Fires N concurrent reservations from the browser and tallies what the API answered. */
 @Component({
   selector: 'app-simulate',
-  imports: [FormsModule, DecimalPipe],
+  imports: [FormsModule, DecimalPipe, HelpDialogComponent],
   template: `
+    <header class="page-head">
+      <div><h2>Simulate</h2></div>
+      <app-help [guide]="guide" />
+    </header>
+
     <div class="sim">
       <p class="muted" style="max-width: 65ch; margin: 0 0 16px">
-        This fires real <span class="mono">POST /api/v1/orders</span> calls from your browser, all at once,
+        Fires real <span class="mono">POST /api/v1/orders</span> calls from your browser, all at once,
         and counts the answers. Whatever the numbers, successes can never exceed the stock the run started with.
       </p>
 
@@ -83,6 +90,7 @@ interface RunResult {
 export class SimulateComponent {
   private api = inject(ApiService);
   private toast = inject(ToastService);
+  guide = PAGE_GUIDES.find((g) => g.key === 'simulate')!;
 
   rows = signal<InventoryRow[]>([]);
   sku = '';
