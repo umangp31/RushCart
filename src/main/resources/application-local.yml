@@ -1,0 +1,21 @@
+spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed
+  datasource:
+    url: jdbc:postgresql://localhost:${DB_PORT:5433}/${DB_NAME:rushcart}
+    username: ${DB_USER:rushcart}
+    password: ${DB_PASSWORD:rushcart}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  data:
+    redis:
+      host: localhost
+      port: ${REDIS_PORT:6380}
+  kafka:
+    bootstrap-servers: localhost:${KAFKA_PORT:9092}
+
+logging:
+  level:
+    com.rushcart: DEBUG
